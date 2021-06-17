@@ -8,7 +8,7 @@ print("The game will begin shortly, if you need any help, go to loremipsum to se
 
 win=0
 amount=0
-
+userInput=0
 #Defining the classes
 
 
@@ -32,40 +32,25 @@ class Player:
 
 #Blueprint for various buildings
 
-class Building:
+class House:
 
 #main
     #Building have: price(gold), ressourceprice(price of wood, stone etc.), amount(how many buildings there are)
 
-    def __init__(self, price, ressourceprice, amount):
+    def __init__(self, price = 500, ressourceprice = 10, amount= 0):
         self.price = price
         self.ressourceprice = ressourceprice
         self.amount = amount
 
-    def listresources(self):
+    def listamounthouses(self):
         print("You got " + str(self.amount) + " buildings")
 
-
-"""
-
-class Troop:
-    def __init__(self, price, ressourceprice, health, attack):
+class Lumberbuilding:
+    def __init__(self, price= 100, ressourceprice = 5, amount = 0):
         self.price = price
-        self.ressourrceprice = ressourceprice
+        self.ressourceprice = ressourceprice
+        self.amount = amount
 
-
-class Farm(Building):
-    def __init__(self, price = 100):
-        self.price = price
-    def build(self, gold):
-        self.amount += 1
-        Player.gold - price
-        print("Du hast nun ", self.amount, " an Farmen und", gold," Gold")
-
-class Barracks(Building):
-    def __init__(self,):
-        self = self
-"""
 
 #Define Functions
 
@@ -73,34 +58,60 @@ def addGold():
     #Gold to add can ne expressed with the function 60*x**(1/5)
     #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
     #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
-    goldToAdd= 60*building.amount**(1/5)
-    nikita.gold += goldToAdd
+    goldToAdd= 60*house.amount**(1/5)
+    nikita.gold += int(goldToAdd)
 
-#BuildBuilding will add x-amount to amount of Building and detract x-amount from player list resources
+def addLumber():
+    #same as addGold(), but with the function 3*x**(1/2)
+    lumberToAdd = 3*lumber.amount**(1/2)
+    nikita.wood += int(lumberToAdd)
 
 
-def BuildBuilding(x):
-    building.amount += x
-    nikita.gold -= x*building.price
-    nikita.wood -= x*building.ressourceprice
+#BuildBuilding will add x-amount to amount of Building and detract x-amount from player resources
+
+def BuildHouse(x):
+    house.amount += x
+    nikita.gold -= x*house.price
+    nikita.wood -= x*house.ressourceprice
+
+
+def BuildLumber(x):
+    lumber.amount += x
+    nikita.gold -= x*house.price
+    nikita.wood -= x*house.ressourceprice
 
 #Create Objects
 
-building=Building(100, 5, 0)
+house = House()
 nikita = Player() #nikita als origineller Spieler
+lumber = Lumberbuilding()
 
 #main
 
 while True:
-
+    #adding gold, resources etc.
     addGold()
+    addLumber()
+
+    #Asking for user input
     if(str(input("Do you want to build a building? y ")) == "y"):
-        amount=int(input("How many buildings? numbers only "))
-        BuildBuilding(amount)
-        amount=0
+        userInput=str(input("build: house with h, lumber with l"))
+        if( userInput == "h"):
+            print("building a house!")
+            amount=int(input("How many buildings? numbers only "))
+            BuildHouse(amount)
+            amount=0
+        elif(userInput == "l"):
+            print("building a lumber!")
+            amount=int(input("How many buildings? numbers only "))
+            BuildLumber(amount)
+            amount=0
+
+        else:
+            print("You didnt input a valid input!")
 
     nikita.listresources()
-    building.listresources()
+    house.listamounthouses()
 
     if(nikita.gold < 0 or nikita.gold >9999):
         if(nikita.gold < 0):
