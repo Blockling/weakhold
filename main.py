@@ -2,13 +2,14 @@
 
 print("Welcome to Weakhold!" + "\n")
 print("You are the lord of this castle. Protect it with everything you have.")
-print("The game will begin shortly, if you need any help, go to loremipsum to see how to play!" + "\n")
+print("The game will begin shortly, if you need any help, go to https://github.com/Blockling/weakhold/blob/main/README.md to see how to play!" + "\n")
 
 #creating variables
 
 win=0
 amount=0
 userInput=0
+
 #Defining the classes
 
 
@@ -16,7 +17,8 @@ userInput=0
 
 class Player:
 
-    #Player have: wood(to buil building), gold(money), health(if reduced to zero, you die), bread(reduced over course of the game, will reduce health if it falls below 0),
+    #Player have: wood(to buil building), gold(money), health(if reduced to zero, you die),
+    #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
   def __init__(self, wood = 50, gold = 2000, health = 100, bread = 50):
@@ -68,7 +70,6 @@ def addLumber():
     lumberToAdd = 3*lumber.amount**(1/2)
     nikita.wood += int(lumberToAdd)
 
-
 #BuildBuilding will add x-amount to amount of Building and detract x-amount from player resources
 
 def BuildHouse(x):
@@ -94,13 +95,22 @@ while True:
     #adding gold, resources etc.
     addGold()
     addLumber()
-
+    loop=1
     #Asking for user input
     if(str(input("Do you want to build a building? y ")) == "y"):
         userInput=str(input("build: house with h, lumber with l"))
+
         if( userInput == "h"):
             print("building a house!")
-            amount=int(input("How many buildings? numbers only "))
+
+            while loop == 1:
+                userInput=input("How many buildings?")
+                print(userInput.isnumeric())
+                if (userInput.isnumeric() == True):
+                    loop=0
+                else:
+                    print("Your response can be Numbers only!")
+            amount=int(userInput)
             BuildHouse(amount)
             amount=0
         elif(userInput == "l"):
