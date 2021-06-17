@@ -31,25 +31,27 @@ class Player:
     print("You got " + str(self.wood) + " wood, " + str(self.gold) + " gold, ")
 
 #Blueprint for various buildings
-
-class House:
-
-#main
-    #Building have: price(gold), ressourceprice(price of wood, stone etc.), amount(how many buildings there are)
-
-    def __init__(self, price = 500, ressourceprice = 10, amount= 0):
+#Building is masterclass for all building such as House
+class Building:
+    #Buildings have: price(gold), ressourceprice(price of wood, stone etc.), amount(how many buildings there are)
+    def __init__(self, price, ressourceprice, amount):
         self.price = price
         self.ressourceprice = ressourceprice
         self.amount = amount
+
+#House is a Building after the Blueprint of "Building", which will later generate money
+class House(Building):
+    def __init__(self):
+        super(House, self).__init__(100, 5, 0)
 
     def listamounthouses(self):
         print("You got " + str(self.amount) + " buildings")
 
-class Lumberbuilding:
-    def __init__(self, price= 100, ressourceprice = 5, amount = 0):
-        self.price = price
-        self.ressourceprice = ressourceprice
-        self.amount = amount
+
+#House is a Building after the Blueprint of "Building", which will later generate wood
+class Lumberbuilding(Building):
+    def __init__(self):
+        super(Lumberbuilding, self).__init__(100, 6, 0)
 
 
 #Define Functions
