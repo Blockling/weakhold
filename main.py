@@ -12,9 +12,7 @@ userInput=0
 
 #Defining the classes
 
-
 #Players are your character, aswell as Enemies
-
 class Player:
 
     #Player have: wood(to buil building), gold(money), health(if reduced to zero, you die),
@@ -58,7 +56,6 @@ class House(Building):
     def listamounthouses(self):
         print("You got " + str(self.amount) + " buildings")
 
-
 #House is a Building after the Blueprint of "Building", which will later generate wood
 class Lumberbuilding(Building):
     def __init__(self):
@@ -67,13 +64,20 @@ class Lumberbuilding(Building):
     def listamountlumber(self):
         print("You got " + str(self.amount) + " lumberbuildings")
 
-
 #Define Functions
 
 def BuildHouse(x):
     house.amount += x
     nikita.gold -= x*house.price
     nikita.wood -= x*house.ressourceprice
+
+def Hunger():
+    hungry = house.amount / 10
+    print("hungry", hungry)
+    if nikita.bread <= 0:
+        nikita.health -= hungry
+    else:
+        nikita.bread -= hungry
 
 def BuildLumber(x):
     lumber.amount += x
@@ -116,7 +120,6 @@ def renewPlayerRessources():
     lumberToAdd = 3*lumber.amount**(1/2)
     nikita.wood += int(lumberToAdd)
 
-
 #Create Objects
 
 house = House()
@@ -124,17 +127,19 @@ nikita = Player() #nikita als origineller Spieler
 lumber = Lumberbuilding()
 
 #main
-
 while True:
+
     loop=1
     flushInput()
+
     #adding gold, resources etc.
+    Hunger()
     renewPlayerRessources()
     Listeverything()
+
     #Asking for user input
     if(str(input("Do you want to build a building? y ")) == "y"):
         userInput=str(input("build: house with h, lumber with l"))
-
         if( userInput == "h"):
             print("building a house!")
             BuildHouse(InputNumberOnly())
@@ -144,8 +149,8 @@ while True:
         else:
             print("You didnt input a valid input!")
 
-    if(nikita.gold < 0 or nikita.gold >9999):
-        if(nikita.gold < 0):
+    if(nikita.health <= 0 or nikita.gold >9999):
+        if(nikita.health <= 0):
             win = 0
         if(nikita.gold > 9999):
             win = 1
