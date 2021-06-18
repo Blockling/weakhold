@@ -70,25 +70,10 @@ class Lumberbuilding(Building):
 
 #Define Functions
 
-def addGold():
-    #Gold to add can ne expressed with the function 60*x**(1/5)
-    #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
-    #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
-    goldToAdd= 60*house.amount**(1/5)
-    nikita.gold += int(goldToAdd)
-
-def addLumber():
-    #same as addGold(), but with the function 3*x**(1/2)
-    lumberToAdd = 3*lumber.amount**(1/2)
-    nikita.wood += int(lumberToAdd)
-
-#BuildBuilding will add x-amount to amount of Building and detract x-amount from player resources
-
 def BuildHouse(x):
     house.amount += x
     nikita.gold -= x*house.price
     nikita.wood -= x*house.ressourceprice
-
 
 def BuildLumber(x):
     lumber.amount += x
@@ -103,6 +88,35 @@ def Listeverything():
     house.listamounthouses()
     lumber.listamountlumber()
 
+def InputNumberOnly():
+    loop1 = 1
+    while loop1 == 1:
+        userInput=input("How many buildings?")
+        if (userInput.isnumeric() == True):
+            loop1=0
+    else:
+        print("Your response can be Numbers only!")
+    return(int(userInput))
+
+def flushInput():
+    loop1=50
+    while loop1>0:
+        print("\n")
+        loop1 -= 1
+
+def renewPlayerRessources():
+    #Gold
+    #Gold to add can ne expressed with the function 60*x**(1/5)
+    #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
+    #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
+    goldToAdd= 60*house.amount**(1/5)
+    nikita.gold += int(goldToAdd)
+    #Lumber
+    #same as addGold(), but with the function 3*x**(1/2)
+    lumberToAdd = 3*lumber.amount**(1/2)
+    nikita.wood += int(lumberToAdd)
+
+
 #Create Objects
 
 house = House()
@@ -113,10 +127,9 @@ lumber = Lumberbuilding()
 
 while True:
     loop=1
-
+    flushInput()
     #adding gold, resources etc.
-    addGold()
-    addLumber()
+    renewPlayerRessources()
     Listeverything()
     #Asking for user input
     if(str(input("Do you want to build a building? y ")) == "y"):
@@ -124,25 +137,10 @@ while True:
 
         if( userInput == "h"):
             print("building a house!")
-
-            while loop == 1:
-                userInput=input("How many buildings?")
-                print(userInput.isnumeric())
-                if (userInput.isnumeric() == True):
-                    loop=0
-                else:
-                    print("Your response can be Numbers only!")
-            BuildHouse(int(userInput))
+            BuildHouse(InputNumberOnly())
         elif(userInput == "l"):
             print("building a lumber!")
-            while loop == 1:
-                userInput=input("How many buildings?")
-                print(userInput.isnumeric())
-                if (userInput.isnumeric() == True):
-                    loop=0
-                else:
-                    print("Your response can be Numbers only!")
-            BuildLumber(int(userInput))
+            BuildLumber(InputNumberOnly())
         else:
             print("You didnt input a valid input!")
 
