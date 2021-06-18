@@ -21,16 +21,25 @@ class Player:
     #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
-  def __init__(self, wood = 50, gold = 2000, health = 100, bread = 50):
-    self.wood = wood
-    self.gold = gold
-    self.health = health
-    self.bread = bread
+    def __init__(self, wood = 50, gold = 2000, health = 100, bread = 50):
+        self.wood = wood
+        self.gold = gold
+        self.health = health
+        self.bread = bread
 
     #Funtion, to show how much resources etc. a Player has
 
-  def listresources(self):
-    print("You got " + str(self.wood) + " wood, " + str(self.gold) + " gold, ")
+    def listgold(self):
+        print("You got " + str(self.gold) + " gold")
+
+    def listwood(self):
+       print("You got " + str(self.wood) + " wood")
+
+    def listhealth(self):
+       print("You got " + str(self.health) + " health")
+
+    def listbread(self):
+       print("You got " + str(self.bread) + " bread")
 
 #Blueprint for various buildings
 #Building is masterclass for all building such as House
@@ -54,6 +63,9 @@ class House(Building):
 class Lumberbuilding(Building):
     def __init__(self):
         super(Lumberbuilding, self).__init__(100, 6, 0)
+
+    def listamountlumber(self):
+        print("You got " + str(self.amount) + " lumberbuildings")
 
 
 #Define Functions
@@ -83,6 +95,14 @@ def BuildLumber(x):
     nikita.gold -= x*house.price
     nikita.wood -= x*house.ressourceprice
 
+def Listeverything():
+    nikita.listgold()
+    nikita.listwood()
+    nikita.listhealth()
+    nikita.listbread()
+    house.listamounthouses()
+    lumber.listamountlumber()
+
 #Create Objects
 
 house = House()
@@ -92,10 +112,12 @@ lumber = Lumberbuilding()
 #main
 
 while True:
+    loop=1
+
     #adding gold, resources etc.
     addGold()
     addLumber()
-    loop=1
+    Listeverything()
     #Asking for user input
     if(str(input("Do you want to build a building? y ")) == "y"):
         userInput=str(input("build: house with h, lumber with l"))
@@ -110,20 +132,19 @@ while True:
                     loop=0
                 else:
                     print("Your response can be Numbers only!")
-            amount=int(userInput)
-            BuildHouse(amount)
-            amount=0
+            BuildHouse(int(userInput))
         elif(userInput == "l"):
             print("building a lumber!")
-            amount=int(input("How many buildings? numbers only "))
-            BuildLumber(amount)
-            amount=0
-
+            while loop == 1:
+                userInput=input("How many buildings?")
+                print(userInput.isnumeric())
+                if (userInput.isnumeric() == True):
+                    loop=0
+                else:
+                    print("Your response can be Numbers only!")
+            BuildLumber(int(userInput))
         else:
             print("You didnt input a valid input!")
-
-    nikita.listresources()
-    house.listamounthouses()
 
     if(nikita.gold < 0 or nikita.gold >9999):
         if(nikita.gold < 0):
