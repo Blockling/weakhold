@@ -41,6 +41,12 @@ class Player:
     def listbread(self):
        print("You got " + str(self.bread) + " bread")
 
+    def listwheat(self):
+       print("You got " + str(self.wheat) + " wheat")
+
+    def listflour(self):
+       print("You got " + str(self.flour) + " flour")
+
 #Blueprint for various buildings
 #Building is masterclass for all building such as House
 class Building:
@@ -113,6 +119,8 @@ def Listeverything():
     nikita.listwood()
     nikita.listhealth()
     nikita.listbread()
+    nikita.listwheat()
+    nikita.listflour()
     house.listamounthouses()
     lumber.listamountlumber()
 
@@ -144,14 +152,10 @@ def renewPlayerRessources():
     lumberToAdd = 3*lumber.amount**(1/2)
     nikita.wood += lumberToAdd
     #Wheat
-    print("wheat 0", nikita.wheat)
     wheatToAdd = 3*wheatfarm.amount**(1/2)
-    print("wheatToAdd", wheatToAdd)
     nikita.wheat += wheatToAdd
-    print("wheat 1", nikita.wheat)
     #flour
     flourToAdd = 3*windmill.amount**(1/2)
-    print("flourtoadd", flourToAdd)
     if nikita.wheat>0:
         if flourToAdd <= nikita.wheat:
             nikita.wheat -= flourToAdd
@@ -159,8 +163,6 @@ def renewPlayerRessources():
         else:
             nikita.flour += nikita.wheat
             nikita.wheat = 0
-    print("wheat", nikita.wheat)
-    print("flour", nikita.flour)
     #bread
     breadToAdd = 3*bakery.amount**(1/2)
     if nikita.flour>0:
