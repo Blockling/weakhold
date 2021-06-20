@@ -19,11 +19,13 @@ class Player:
     #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
-    def __init__(self, wood = 50, gold = 2000, health = 100, bread = 50):
+    def __init__(self, wood = 50, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0):
         self.wood = wood
         self.gold = gold
         self.health = health
         self.bread = bread
+        self.wheat = wheat
+        self.flour = flour
 
     #Funtion, to show how much resources etc. a Player has
 
@@ -64,12 +66,39 @@ class Lumberbuilding(Building):
     def listamountlumber(self):
         print("You got " + str(self.amount) + " lumberbuildings")
 
+class Wheatfarm(Building):
+    """docstring for Wheatfarm."""
+
+    def __init__(self):
+        super(Wheatfarm, self).__init__(50,10,0)
+
+class Windmill(Building):
+    """docstring for Windmill."""
+
+    def __init__(self):
+        super(Windmill, self).__init__(250, 20,0)
+
+class Bakery(Building):
+    """docstring for Bakery."""
+
+    def __init__(self):
+        super(Bakery, self).__init__(50, 10, 0)
+
+
+
+
+class Troop:
+    def __init__(self, price, health, damage):
+        self.price = price
+        self.health = health
+        self.damage = damage
+
 #Define Functions
 
-def BuildHouse(x):
-    house.amount += x
-    nikita.gold -= x*house.price
-    nikita.wood -= x*house.ressourceprice
+def BuildBuilding(x, y):
+    y.amount += x
+    nikita.gold -= x*y.price
+    nikita.wood -= x*y.ressourceprice
 
 def Hunger():
     hungry = house.amount / 10
@@ -78,11 +107,6 @@ def Hunger():
         nikita.health -= hungry
     else:
         nikita.bread -= hungry
-
-def BuildLumber(x):
-    lumber.amount += x
-    nikita.gold -= x*house.price
-    nikita.wood -= x*house.ressourceprice
 
 def Listeverything():
     nikita.listgold()
@@ -114,17 +138,48 @@ def renewPlayerRessources():
     #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
     #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
     goldToAdd= 60*house.amount**(1/5)
-    nikita.gold += int(goldToAdd)
+    nikita.gold += goldToAdd
     #Lumber
     #same as addGold(), but with the function 3*x**(1/2)
     lumberToAdd = 3*lumber.amount**(1/2)
-    nikita.wood += int(lumberToAdd)
+    nikita.wood += lumberToAdd
+    #Wheat
+    print("wheat 0", nikita.wheat)
+    wheatToAdd = 3*wheatfarm.amount**(1/2)
+    print("wheatToAdd", wheatToAdd)
+    nikita.wheat += wheatToAdd
+    print("wheat 1", nikita.wheat)
+    #flour
+    flourToAdd = 3*windmill.amount**(1/2)
+    print("flourtoadd", flourToAdd)
+    if nikita.wheat>0:
+        if flourToAdd <= nikita.wheat:
+            nikita.wheat -= flourToAdd
+            nikita.flour += flourToAdd
+        else:
+            nikita.flour += nikita.wheat
+            nikita.wheat = 0
+    print("wheat", nikita.wheat)
+    print("flour", nikita.flour)
+    #bread
+    breadToAdd = 3*bakery.amount**(1/2)
+    if nikita.flour>0:
+        if breadToAdd <= nikita.flour:
+            nikita.flour -= breadToAdd
+            nikita.bread += breadToAdd
+        else:
+            nikita.bread += nikita.flour
+            nikita.bread = 0
+
 
 #Create Objects
 
 house = House()
 nikita = Player() #nikita als origineller Spieler
 lumber = Lumberbuilding()
+wheatfarm = Wheatfarm()
+windmill = Windmill()
+bakery = Bakery()
 
 #main
 while True:
@@ -139,13 +194,24 @@ while True:
 
     #Asking for user input
     if(str(input("Do you want to build a building? y ")) == "y"):
-        userInput=str(input("build: house with h, lumber with l"))
+        userInput=str(input("build: house with h, lumber with l, wheatfarm with w, "+"\n"+"windmill with W, bakery with b"))
         if( userInput == "h"):
             print("building a house!")
-            BuildHouse(InputNumberOnly())
+            BuildBuilding(InputNumberOnly(), house)
         elif(userInput == "l"):
             print("building a lumber!")
-            BuildLumber(InputNumberOnly())
+            BuildBuilding(InputNumberOnly(), lumber)
+        elif(userInput == "w"):
+            print("building a wheatfarm!")
+            BuildBuilding(InputNumberOnly(), wheatfarm)
+        elif(userInput == "W"):
+            print("building a windmill!")
+            BuildBuilding(InputNumberOnly(), windmill)
+        elif(userInput == "b"):
+            print("building a bakery!")
+            BuildBuilding(InputNumberOnly(), bakery)
+        elif(userInput == "HERMANN"):
+            print("henlo")
         else:
             print("You didnt input a valid input!")
 
