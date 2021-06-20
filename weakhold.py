@@ -19,7 +19,7 @@ class Player:
     #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
-    def __init__(self, wood = 50, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0):
+    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0):
         self.wood = wood
         self.gold = gold
         self.health = health
@@ -56,6 +56,9 @@ class Building:
         self.ressourceprice = ressourceprice
         self.amount = amount
 
+    def listamountself(self):
+        print("You have", self.amount, " of ", self)
+
 #House is a Building after the Blueprint of "Building", which will later generate money
 class House(Building):
     def __init__(self):
@@ -76,7 +79,11 @@ class Wheatfarm(Building):
     """docstring for Wheatfarm."""
 
     def __init__(self):
-        super(Wheatfarm, self).__init__(50,10,0)
+        super(Wheatfarm, self).__init__(10,20,0)
+
+    def listamountwheatfarm(self):
+        print("You got " + str(self.amount) + " wheatfarms")
+
 
 class Windmill(Building):
     """docstring for Windmill."""
@@ -84,11 +91,19 @@ class Windmill(Building):
     def __init__(self):
         super(Windmill, self).__init__(250, 20,0)
 
+    def listamountwindmill(self):
+        print("You got " + str(self.amount) + " windmills")
+
+
 class Bakery(Building):
     """docstring for Bakery."""
 
     def __init__(self):
         super(Bakery, self).__init__(50, 10, 0)
+
+    def listamountbakery(self):
+        print("You got " + str(self.amount) + " bakerys")
+
 
 
 
@@ -107,7 +122,7 @@ def BuildBuilding(x, y):
     nikita.wood -= x*y.ressourceprice
 
 def Hunger():
-    hungry = house.amount / 10
+    hungry = house.amount+(wheatfarm.amount + windmill.amount+bakery.amount*2+lumber.amount) * 0.1
     print("hungry", hungry)
     if nikita.bread <= 0:
         nikita.health -= hungry
@@ -123,6 +138,9 @@ def Listeverything():
     nikita.listflour()
     house.listamounthouses()
     lumber.listamountlumber()
+    wheatfarm.listamountwheatfarm()
+    windmill.listamountwindmill()
+    bakery.listamountbakery()
 
 def InputNumberOnly():
     loop1 = 1
@@ -141,18 +159,19 @@ def flushInput():
         loop1 -= 1
 
 def renewPlayerRessources():
+    buildingUpkeep =0.1*(windmill.amount + lumber.amount + bakery.amount + wheatfarm.amount)
     #Gold
     #Gold to add can ne expressed with the function 60*x**(1/5)
     #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
     #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
     #other resources will undergo the same idea withpossibly different functions
-    goldToAdd= 60*house.amount**(1/5)
+    goldToAdd= 60*house.amount**(1/5) - buildingUpkeep
     nikita.gold += goldToAdd
     #Lumber
     lumberToAdd = 3*lumber.amount**(1/2)
     nikita.wood += lumberToAdd
     #Wheat
-    wheatToAdd = wheatfarm.amount**(1/2)
+    wheatToAdd = 4*wheatfarm.amount**(1/2)
     nikita.wheat += wheatToAdd
     #flour
     flourToAdd = 8*windmill.amount**(1/2)
@@ -164,14 +183,14 @@ def renewPlayerRessources():
             nikita.flour += nikita.wheat
             nikita.wheat = 0
     #bread
-    breadToAdd = bakery.amount**(1/2)
+    breadToAdd = 16*bakery.amount**(1/2)
     if nikita.flour>0:
         if breadToAdd <= nikita.flour:
             nikita.flour -= breadToAdd
             nikita.bread += breadToAdd
         else:
             nikita.bread += nikita.flour
-            nikita.bread = 0
+            nikita.flour = 0
 
 
 #Create Objects
@@ -195,7 +214,7 @@ while True:
     Listeverything()
 
     #Asking for user input
-    if(str(input("Do you want to build a building? y ")) == "y"):
+    if(str(input("Do you want to build a building? y for yes \nanything else for no")) == "y"):
         userInput=str(input("build: house with h, lumber with l, wheatfarm with w, "+"\n"+"windmill with W, bakery with b"))
         if( userInput == "h"):
             print("building a house!")
