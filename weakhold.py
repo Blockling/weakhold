@@ -1,3 +1,6 @@
+#importing liblary
+import time #importing time to make 1 stupid joke, lets see if you find it :)
+
 #Tutorial on how to play
 
 print("Welcome to Weakhold!" + "\n")
@@ -19,33 +22,27 @@ class Player:
     #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
-    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0):
+    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0, sword = 0, shield = 0, bow = 0):
         self.wood = wood
         self.gold = gold
         self.health = health
         self.bread = bread
         self.wheat = wheat
         self.flour = flour
+        self.sword = sword
+        self.shield = shield
+        self.bow = bow
+
 
     #Funtion, to show how much resources etc. a Player has
 
-    def listgold(self):
+    def listall(self):
         print("You got " + str(self.gold) + " gold")
-
-    def listwood(self):
-       print("You got " + str(self.wood) + " wood")
-
-    def listhealth(self):
-       print("You got " + str(self.health) + " health")
-
-    def listbread(self):
-       print("You got " + str(self.bread) + " bread")
-
-    def listwheat(self):
-       print("You got " + str(self.wheat) + " wheat")
-
-    def listflour(self):
-       print("You got " + str(self.flour) + " flour")
+        print("You got " + str(self.wood) + " wood")
+        print("You got " + str(self.health) + " health")
+        print("You got " + str(self.bread) + " bread")
+        print("You got " + str(self.wheat) + " wheat")
+        print("You got " + str(self.flour) + " flour")
 
 #Blueprint for various buildings
 #Building is masterclass for all building such as House
@@ -57,23 +54,17 @@ class Building:
         self.amount = amount
 
     def listamountself(self):
-        print("You have", self.amount, " of ", self)
+        print("You have", self.amount, type(self).__name__)
 
 #House is a Building after the Blueprint of "Building", which will later generate money
 class House(Building):
     def __init__(self):
         super(House, self).__init__(100, 5, 0)
 
-    def listamounthouses(self):
-        print("You got " + str(self.amount) + " buildings")
-
 #House is a Building after the Blueprint of "Building", which will later generate wood
 class Lumberbuilding(Building):
     def __init__(self):
         super(Lumberbuilding, self).__init__(100, 6, 0)
-
-    def listamountlumber(self):
-        print("You got " + str(self.amount) + " lumberbuildings")
 
 class Wheatfarm(Building):
     """docstring for Wheatfarm."""
@@ -81,19 +72,11 @@ class Wheatfarm(Building):
     def __init__(self):
         super(Wheatfarm, self).__init__(10,20,0)
 
-    def listamountwheatfarm(self):
-        print("You got " + str(self.amount) + " wheatfarms")
-
-
 class Windmill(Building):
     """docstring for Windmill."""
 
     def __init__(self):
         super(Windmill, self).__init__(250, 20,0)
-
-    def listamountwindmill(self):
-        print("You got " + str(self.amount) + " windmills")
-
 
 class Bakery(Building):
     """docstring for Bakery."""
@@ -101,18 +84,44 @@ class Bakery(Building):
     def __init__(self):
         super(Bakery, self).__init__(50, 10, 0)
 
-    def listamountbakery(self):
-        print("You got " + str(self.amount) + " bakerys")
+class Barracks(Building):
+    """docstring for Barracks."""
 
-
-
-
+    def __init__(self):
+        super(Barracks, self).__init__(1000, 500, 0)
 
 class Troop:
-    def __init__(self, price, health, damage):
+    def __init__(self, price, health, damage, bowcost, shieldcost, swordcost, amount):
         self.price = price
         self.health = health
         self.damage = damage
+        self.swordcost = swordcost
+        self.shieldcost = shieldcost
+        self.bowcost = bowcost
+        self.amount = amount
+
+    def listamountself(self):
+        print("You have", self.amount, type(self).__name__)
+
+#Knight counters Gladiator, Gladiotor counters Archer, Archer counters Knight
+
+class Knight(Troop):
+    """docstring for Knight."""
+
+    def __init__(self):
+        super(Knight, self).__init__(100,50, 50, 0, 0, 1, 0)
+
+class Gladiator(Troop):
+    """docstring for Gladiotor."""
+
+    def __init__(self):
+        super(Gladiotor, self).__init__(100, 90, 10, 0 , 1, 0, 0)
+
+class Archer(Troop):
+    """docstring for Archer."""
+
+    def __init__(self):
+        super(Archer, self).__init__(100, 10, 90, 1, 0, 0, 0)
 
 #Define Functions
 
@@ -130,17 +139,14 @@ def Hunger():
         nikita.bread -= hungry
 
 def Listeverything():
-    nikita.listgold()
-    nikita.listwood()
-    nikita.listhealth()
-    nikita.listbread()
-    nikita.listwheat()
-    nikita.listflour()
-    house.listamounthouses()
-    lumber.listamountlumber()
-    wheatfarm.listamountwheatfarm()
-    windmill.listamountwindmill()
-    bakery.listamountbakery()
+    nikita.listall()
+    house.listamountself()
+    lumber.listamountself()
+    wheatfarm.listamountself()
+    windmill.listamountself()
+    bakery.listamountself()
+    barrack.listamountself()
+    knight.listamountself()
 
 def InputNumberOnly():
     loop1 = 1
@@ -201,6 +207,8 @@ lumber = Lumberbuilding()
 wheatfarm = Wheatfarm()
 windmill = Windmill()
 bakery = Bakery()
+barrack = Barracks()
+knight = Knight()
 
 #main
 while True:
@@ -215,7 +223,7 @@ while True:
 
     #Asking for user input
     if(str(input("Do you want to build a building? y for yes \nanything else for no")) == "y"):
-        userInput=str(input("build: house with h, lumber with l, wheatfarm with w, "+"\n"+"windmill with W, bakery with b"))
+        userInput=str(input("build: house with h, lumber with l, wheatfarm with w, "+"\n"+"windmill with W, bakery with b"+"\n"+"barracks with B"))
         if( userInput == "h"):
             print("building a house!")
             BuildBuilding(InputNumberOnly(), house)
@@ -231,6 +239,13 @@ while True:
         elif(userInput == "b"):
             print("building a bakery!")
             BuildBuilding(InputNumberOnly(), bakery)
+        elif(userInput == "B"):
+            if barrack.amount != 0:
+                print("You can only have one Barrack Obama!")
+                time.sleep(3)
+            else:
+                print("building a barrack!")
+                BuildBuilding(1, barrack)
         elif(userInput == "HERMANN"):
             print("henlo")
         else:
