@@ -145,17 +145,17 @@ def renewPlayerRessources():
     #Gold to add can ne expressed with the function 60*x**(1/5)
     #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
     #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
+    #other resources will undergo the same idea withpossibly different functions
     goldToAdd= 60*house.amount**(1/5)
     nikita.gold += goldToAdd
     #Lumber
-    #same as addGold(), but with the function 3*x**(1/2)
     lumberToAdd = 3*lumber.amount**(1/2)
     nikita.wood += lumberToAdd
     #Wheat
-    wheatToAdd = 3*wheatfarm.amount**(1/2)
+    wheatToAdd = wheatfarm.amount**(1/2)
     nikita.wheat += wheatToAdd
     #flour
-    flourToAdd = 3*windmill.amount**(1/2)
+    flourToAdd = 8*windmill.amount**(1/2)
     if nikita.wheat>0:
         if flourToAdd <= nikita.wheat:
             nikita.wheat -= flourToAdd
@@ -164,7 +164,7 @@ def renewPlayerRessources():
             nikita.flour += nikita.wheat
             nikita.wheat = 0
     #bread
-    breadToAdd = 3*bakery.amount**(1/2)
+    breadToAdd = bakery.amount**(1/2)
     if nikita.flour>0:
         if breadToAdd <= nikita.flour:
             nikita.flour -= breadToAdd
