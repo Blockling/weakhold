@@ -22,8 +22,9 @@ class Player:
     #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
-    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0, sword = 0, shield = 0, bow = 0):
+    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0, sword = 0, shield = 0, bow = 0, iron = 0):
         self.wood = wood
+        self.iron = iron
         self.gold = gold
         self.health = health
         self.bread = bread
@@ -39,6 +40,7 @@ class Player:
     def listall(self):
         print("You got " + str(self.gold) + " gold")
         print("You got " + str(self.wood) + " wood")
+        print("You got " + str(self.iron) + " iron")
         print("You got " + str(self.health) + " health")
         print("You got " + str(self.bread) + " bread")
         print("You got " + str(self.wheat) + " wheat")
@@ -59,12 +61,12 @@ class Building:
 #House is a Building after the Blueprint of "Building", which will later generate money
 class House(Building):
     def __init__(self):
-        super(House, self).__init__(100, 5, 0)
+        super(House, self).__init__(100, 5, 3)
 
 #House is a Building after the Blueprint of "Building", which will later generate wood
 class Lumberbuilding(Building):
     def __init__(self):
-        super(Lumberbuilding, self).__init__(100, 6, 0)
+        super(Lumberbuilding, self).__init__(100, 6, 1)
 
 class Wheatfarm(Building):
     """docstring for Wheatfarm."""
@@ -89,6 +91,31 @@ class Barracks(Building):
 
     def __init__(self):
         super(Barracks, self).__init__(1000, 500, 0)
+
+class WeaponsSmith(Building):
+    """docstring for Bakery."""
+
+    def __init__(self):
+        super(WeaponsSmith, self).__init__(200, 20, 0)
+
+class SchieldSmith(Building):
+    """docstring for Bakery."""
+
+    def __init__(self):
+        super(SchieldSmith, self).__init__(200, 20, 0)
+
+class BowWorkshop(Building):
+    """docstring for Bakery."""
+
+    def __init__(self):
+        super(BowWorkshop, self).__init__(200, 20, 0)
+
+class IronMine(Building):
+    """docstring for IronMine."""
+
+    def __init__(self):
+        super(IronMine, self).__init__(200, 50, 0)
+
 
 class Troop:
     def __init__(self, price, health, damage, bowcost, shieldcost, swordcost, amount):
@@ -115,7 +142,7 @@ class Gladiator(Troop):
     """docstring for Gladiotor."""
 
     def __init__(self):
-        super(Gladiotor, self).__init__(100, 90, 10, 0 , 1, 0, 0)
+        super(Gladiator, self).__init__(100, 90, 10, 0 , 1, 0, 0)
 
 class Archer(Troop):
     """docstring for Archer."""
@@ -130,8 +157,21 @@ def BuildBuilding(x, y):
     nikita.gold -= x*y.price
     nikita.wood -= x*y.ressourceprice
 
+#x amount of troops to be built, y what troop ist to be built, z what ressource other then price has to be used
+def recruitTroop(x,y):
+    if(nikita.sword> y.swordcost*x and nikita.shield > y.shieldcost and nikita.bow > y.bowcost):
+        y.amount += x
+        nikita.gold -= y.price*x
+        nikita.sword -= y.swordcost*x
+        nikita.shield -= y.shieldcost*x
+        nikita.sword -= y.swordcost*x
+    else:
+        print("You dont have enough materials!")
+        time.sleep(2)
+
+
 def Hunger():
-    hungry = house.amount+(wheatfarm.amount + windmill.amount+bakery.amount*2+lumber.amount) * 0.1
+    hungry = house.amount+(wheatfarm.amount + windmill.amount+bakery.amount*2+lumber.amount) * 0.1 + (knight.amount*0.5 + gladiator.amount + archer.amount*0.2)*0.05
     print("hungry", hungry)
     if nikita.bread <= 0:
         nikita.health -= hungry
@@ -142,16 +182,17 @@ def Listeverything():
     nikita.listall()
     house.listamountself()
     lumber.listamountself()
+    ironmine.listamountself()
     wheatfarm.listamountself()
     windmill.listamountself()
     bakery.listamountself()
     barrack.listamountself()
     knight.listamountself()
 
-def InputNumberOnly():
+def InputNumberOnly(x):
     loop1 = 1
     while loop1 == 1:
-        userInput=input("How many buildings?")
+        userInput=input(x)
         if (userInput.isnumeric() == True):
             loop1=0
     else:
@@ -159,10 +200,22 @@ def InputNumberOnly():
     return(int(userInput))
 
 def flushInput():
-    loop1=50
+    loop1=20
     while loop1>0:
         print("\n")
         loop1 -= 1
+
+#m for multiplier, b for building, r resource to Add, z for resource to take
+
+def relativeRessources(m, b, r, z):
+    resourceToAdd = m * b.amount ** (1/2)
+    if r>0:
+        if resourceToAdd <= r:
+            r-= resourceToAdd
+            z += resourceToAdd
+        else:
+            z += r
+            r = 0
 
 def renewPlayerRessources():
     buildingUpkeep =0.1*(windmill.amount + lumber.amount + bakery.amount + wheatfarm.amount)
@@ -176,18 +229,14 @@ def renewPlayerRessources():
     #Lumber
     lumberToAdd = 3*lumber.amount**(1/2)
     nikita.wood += lumberToAdd
+    #iron
+    ironToAdd = ironmine.amount**(1/2)
+    nikita.iron += ironToAdd
     #Wheat
     wheatToAdd = 4*wheatfarm.amount**(1/2)
     nikita.wheat += wheatToAdd
     #flour
-    flourToAdd = 8*windmill.amount**(1/2)
-    if nikita.wheat>0:
-        if flourToAdd <= nikita.wheat:
-            nikita.wheat -= flourToAdd
-            nikita.flour += flourToAdd
-        else:
-            nikita.flour += nikita.wheat
-            nikita.wheat = 0
+    relativeRessources(8, windmill, nikita.bread, nikita.flour)
     #bread
     breadToAdd = 16*bakery.amount**(1/2)
     if nikita.flour>0:
@@ -197,7 +246,37 @@ def renewPlayerRessources():
         else:
             nikita.bread += nikita.flour
             nikita.flour = 0
+    """
+    #swordcost
+    breadToAdd = 16*bakery.amount**(1/2)
+    if nikita.flour>0:
+        if breadToAdd <= nikita.flour:
+            nikita.flour -= breadToAdd
+            nikita.bread += breadToAdd
+        else:
+            nikita.bread += nikita.flour
+            nikita.flour = 0
 
+    #shield
+    breadToAdd = 16*bakery.amount**(1/2)
+    if nikita.flour>0:
+        if breadToAdd <= nikita.flour:
+            nikita.flour -= breadToAdd
+            nikita.bread += breadToAdd
+        else:
+            nikita.bread += nikita.flour
+            nikita.flour = 0
+
+    #bow
+    breadToAdd = 16*bakery.amount**(1/2)
+    if nikita.flour>0:
+        if breadToAdd <= nikita.flour:
+            nikita.flour -= breadToAdd
+            nikita.bread += breadToAdd
+        else:
+            nikita.bread += nikita.flour
+            nikita.flour = 0
+"""
 
 #Create Objects
 
@@ -209,6 +288,12 @@ windmill = Windmill()
 bakery = Bakery()
 barrack = Barracks()
 knight = Knight()
+gladiator = Gladiator()
+archer = Archer()
+weaponsmith = WeaponsSmith()
+shieldsmith = SchieldSmith()
+bowworkshop = BowWorkshop()
+ironmine = IronMine()
 
 #main
 while True:
@@ -222,23 +307,37 @@ while True:
     Listeverything()
 
     #Asking for user input
-    if(str(input("Do you want to build a building? y for yes \nanything else for no")) == "y"):
-        userInput=str(input("build: house with h, lumber with l, wheatfarm with w, "+"\n"+"windmill with W, bakery with b"+"\n"+"barracks with B"))
+    userInput = input("build with b, recruit with r, fight with f")
+
+    if userInput=="b":
+        userInput=str(input("build: house with h, lumber with l, wheatfarm with w, ironmine with i"+"\n"+"windmill with W, bakery with b, Weaponsmith with we"+"\n"+"barracks with B, shieldsmith with s, bowworkshop with bo"))
         if( userInput == "h"):
             print("building a house!")
-            BuildBuilding(InputNumberOnly(), house)
+            BuildBuilding(InputNumberOnly("How many buildings?"), house)
         elif(userInput == "l"):
             print("building a lumber!")
-            BuildBuilding(InputNumberOnly(), lumber)
+            BuildBuilding(InputNumberOnly("How many buildings?"), lumber)
         elif(userInput == "w"):
             print("building a wheatfarm!")
-            BuildBuilding(InputNumberOnly(), wheatfarm)
+            BuildBuilding(InputNumberOnly("How many buildings?"), wheatfarm)
         elif(userInput == "W"):
             print("building a windmill!")
-            BuildBuilding(InputNumberOnly(), windmill)
+            BuildBuilding(InputNumberOnly("How many buildings?"), windmill)
         elif(userInput == "b"):
             print("building a bakery!")
-            BuildBuilding(InputNumberOnly(), bakery)
+            BuildBuilding(InputNumberOnly("How many buildings?"), bakery)
+        elif(userInput == "we"):
+            print("building a Weaponsmith!")
+            BuildBuilding(InputNumberOnly("How many buildings?"), weaponsmith)
+        elif(userInput == "s"):
+            print("building a shieldsmith!")
+            BuildBuilding(InputNumberOnly("How many buildings?"), shieldsmith)
+        elif(userInput == "bo"):
+            print("building a Bowworkshop!")
+            BuildBuilding(InputNumberOnly("How many buildings?"), bowworkshop)
+        elif(userInput == "i"):
+            print("building a ironmine!")
+            BuildBuilding(InputNumberOnly("How many buildings?"), ironmine)
         elif(userInput == "B"):
             if barrack.amount != 0:
                 print("You can only have one Barrack Obama!")
@@ -250,6 +349,21 @@ while True:
             print("henlo")
         else:
             print("You didnt input a valid input!")
+
+    if userInput=="r":
+        userInput=str(input("recruit: knight with k, gladiator with g, archer with a"))
+        if( userInput == "k"):
+            print("recruiting knights")
+            recruitTroop(InputNumberOnly("How many Troops?"), knight)
+        elif(userInput == "a"):
+            print("recruiting gladiators")
+            recruitTroop(InputNumberOnly("How many Troops?"), gladiator)
+        elif(userInput == "a"):
+            print("recruiting archers")
+            recruitTroop(InputNumberOnly("How many Troops?"), archer)
+        else:
+            print("You didnt input a valid input!")
+
 
     if(nikita.health <= 0 or nikita.gold >9999):
         if(nikita.health <= 0):
