@@ -207,22 +207,28 @@ def flushInput():
 
 #m for multiplier, b for building, r resource to Add, z for resource to take
 
+## BUG: This function works, but it does not write the mede changes onto the global variables
 def relativeRessources(m, b, r, z):
     resourceToAdd = m * b.amount ** (1/2)
-    if r>0:
-        if resourceToAdd <= r:
-            r-= resourceToAdd
-            z += resourceToAdd
+    print(m, b.amount, r, z, resourceToAdd)
+    if z>0:
+        print("z>0")
+        if resourceToAdd <= z:
+            z-= resourceToAdd
+            r += resourceToAdd
         else:
-            z += r
-            r = 0
+            print("else")
+            r += z
+            z = 0
+
+    print(m, b.amount, r, z, resourceToAdd)
 
 def renewPlayerRessources():
     buildingUpkeep =0.1*(windmill.amount + lumber.amount + bakery.amount + wheatfarm.amount)
     #Gold
     #Gold to add can ne expressed with the function 60*x**(1/5)
     #The x-Axis expresses the Buildings the player poseses and the y-axis the mount of gold the player receives
-    #The player will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
+    #The play   er will get more gold the more buildings he has, but it will get exponectually lower, the more builings he has
     #other resources will undergo the same idea withpossibly different functions
     goldToAdd= 60*house.amount**(1/5) - buildingUpkeep
     nikita.gold += goldToAdd
@@ -236,48 +242,9 @@ def renewPlayerRessources():
     wheatToAdd = 4*wheatfarm.amount**(1/2)
     nikita.wheat += wheatToAdd
     #flour
-    relativeRessources(8, windmill, nikita.bread, nikita.flour)
+    relativeRessources(8, windmill, nikita.flour, nikita.wheat)
     #bread
-    breadToAdd = 16*bakery.amount**(1/2)
-    if nikita.flour>0:
-        if breadToAdd <= nikita.flour:
-            nikita.flour -= breadToAdd
-            nikita.bread += breadToAdd
-        else:
-            nikita.bread += nikita.flour
-            nikita.flour = 0
-    """
-    #swordcost
-    breadToAdd = 16*bakery.amount**(1/2)
-    if nikita.flour>0:
-        if breadToAdd <= nikita.flour:
-            nikita.flour -= breadToAdd
-            nikita.bread += breadToAdd
-        else:
-            nikita.bread += nikita.flour
-            nikita.flour = 0
-
-    #shield
-    breadToAdd = 16*bakery.amount**(1/2)
-    if nikita.flour>0:
-        if breadToAdd <= nikita.flour:
-            nikita.flour -= breadToAdd
-            nikita.bread += breadToAdd
-        else:
-            nikita.bread += nikita.flour
-            nikita.flour = 0
-
-    #bow
-    breadToAdd = 16*bakery.amount**(1/2)
-    if nikita.flour>0:
-        if breadToAdd <= nikita.flour:
-            nikita.flour -= breadToAdd
-            nikita.bread += breadToAdd
-        else:
-            nikita.bread += nikita.flour
-            nikita.flour = 0
-"""
-
+    relativeRessources(16, bakery, nikita.bread, nikita.flour)
 #Create Objects
 
 house = House()
