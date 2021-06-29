@@ -1,3 +1,4 @@
+#comments are still incomplete!!!!
 #importing liblary
 import time #importing time module, to stop the console
 #Tutorial on how to play
@@ -11,7 +12,9 @@ print("The game will begin shortly, if you need any help, go to https://github.c
 win=0
 amount=0
 userInput=0
-rotations= 4
+rotations= -5
+totalrotations=0
+
 
 #Defining the classes
 
@@ -22,7 +25,7 @@ class Player:
     #bread(one of the foos. Reduced over course of the game, will reduce health if it falls below 0)
     #
 
-    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0, sword = 0, shield = 0, bow = 0, iron = 0, troophealth = 0, troopattack = 0, power = 0):
+    def __init__(self, wood = 200, gold = 2000, health = 100, bread = 50, wheat = 0, flour = 0, sword = 0, shield = 0, bow = 0, iron = 0, troophealth = 0, troopattack = 0, power = 0, attacks=0):
         self.wood = wood
         self.iron = iron
         self.gold = gold
@@ -36,7 +39,7 @@ class Player:
         self.troopattack = troopattack
         self.troophealth = troophealth
         self.power = power
-
+        self.attacks = attacks
 
     #Funtion, to show how much resources etc. a Player has
 
@@ -69,10 +72,10 @@ class House(Building):
     def __init__(self):
         super(House, self).__init__(100, 5, 3)
 
-#House is a Building after the Blueprint of "Building", which will later generate wood
+#House is a Building after the Blueprint of "Building", which will later generate wood, wheat and others
 class Lumberbuilding(Building):
     def __init__(self):
-        super(Lumberbuilding, self).__init__(100, 6, 1)
+        super(Lumberbuilding, self).__init__(100, 5, 1)
 
 class Wheatfarm(Building):
     def __init__(self):
@@ -84,11 +87,11 @@ class Windmill(Building):
 
 class Bakery(Building):
     def __init__(self):
-        super(Bakery, self).__init__(50, 10, 0)
+        super(Bakery, self).__init__(500, 20, 0)
 
 class Barracks(Building):
     def __init__(self):
-        super(Barracks, self).__init__(1000, 500, 0)
+        super(Barracks, self).__init__(400, 50, 0)
 
 class WeaponsSmith(Building):
     def __init__(self):
@@ -104,8 +107,8 @@ class BowWorkshop(Building):
 
 class IronMine(Building):
     def __init__(self):
-        super(IronMine, self).__init__(200, 50, 0)
-
+        super(IronMine, self).__init__(5, 10, 0)
+#Troops are different in much health they have and damage they deal
 
 class Troop:
     def __init__(self, price, health, damage, bowcost, shieldcost, swordcost, amount):
@@ -119,8 +122,6 @@ class Troop:
 
     def listamountself(self):
         print("You have", self.amount, type(self).__name__)
-
-#Knight counters Gladiator, Gladiotor counters Archer, Archer counters Knight
 
 class Knight(Troop):
     def __init__(self):
@@ -139,10 +140,13 @@ class Enemy:
         self.power = power
         self.health = health
         self.difficulty = difficulty
+    def listall(self):
+        print("Your enemy got " + str(self.health) + " health")
 
 
 #Define Functions
 
+#Build a building(subtract the gold and wood, add a building), x how many building, y what building
 def BuildBuilding(x, y):
     y.amount += x
     nikita.gold -= x*y.price
@@ -150,20 +154,21 @@ def BuildBuilding(x, y):
 
 #x amount of troops to be built, y what troop ist to be built, z what ressource other then price has to be used
 def recruitTroop(x,y):
-    if(nikita.sword>= int(y.swordcost*x) and nikita.shield >= int(y.shieldcost*x) and nikita.bow >= int(y.bowcost*x)):
-        y.amount += x
-        nikita.gold -= y.price*x
-        nikita.sword -= y.swordcost*x
-        nikita.shield -= y.shieldcost*x
-        nikita.bow -= y.bowcost*x
+    if(nikita.gold>y.price):
+        if(nikita.sword>= int(y.swordcost*x) and nikita.shield >= int(y.shieldcost*x) and nikita.bow >= int(y.bowcost*x)):
+            y.amount += x
+            nikita.gold -= y.price*x
+            nikita.sword -= y.swordcost*x
+            nikita.shield -= y.shieldcost*x
+            nikita.bow -= y.bowcost*x
+        else:
+            print("You dont have enough materials!")
+            time.sleep(2)
     else:
-        print("You dont have enough materials!")
-        time.sleep(2)
-
+        print("you dont have enough money!")
 
 def Hunger():
     hungry = house.amount+(wheatfarm.amount + windmill.amount+bakery.amount*2+lumber.amount) * 0.1 + (knight.amount*0.5 + gladiator.amount + archer.amount*0.2)*0.05
-    print("hungry", hungry)
     if nikita.bread <= 0:
         nikita.health -= hungry
     else:
@@ -171,6 +176,7 @@ def Hunger():
 
 def Listeverything():
     nikita.listall()
+    enemy1.listall()
     house.listamountself()
     lumber.listamountself()
     ironmine.listamountself()
@@ -186,6 +192,7 @@ def Listeverything():
     gladiator.listamountself()
 
 
+#check that the input is a number
 def InputNumberOnly(x):
     loop1 = 1
     while loop1 == 1:
@@ -196,11 +203,19 @@ def InputNumberOnly(x):
         print("Your response can be Numbers only!")
     return(int(userInput))
 
+#initialize the building function
 def initBuild(y):
-    print("building a",  type(y).__name__, "!")
-    BuildBuilding(InputNumberOnly("How many buildings?"), y)
+    if(nikita.gold>y.price):
+        print("building a",  type(y).__name__, "!")
+        BuildBuilding(InputNumberOnly("How many buildings?"), y)
+    else:
+        print("you dont have enough money!")
+        time.sleep(2)
+    if nikita.wood<0:
+        nikita.gold -= nikita.wood
+        nikita.wood = 0
 
-
+#make space for new imput by moving last input to the top
 def flushInput():
     loop1=20
     while loop1>0:
@@ -212,19 +227,21 @@ def flushInput():
 ## BUG: This function does not write the made changes onto the global variables
 def relativeRessources(m, b, r, z):
     resourceToAdd = m * b.amount ** (1/2)
-    print(m, b.amount, r, z, resourceToAdd)
+    #print(m, b.amount, r, z, resourceToAdd)
     if z>0:
-        print("z>0")
+        #print("z>0")
         if resourceToAdd <= z:
             z-= resourceToAdd
             r += resourceToAdd
         else:
-            print("else")
+            #print("else")
             r += z
             z = 0
 
-    print(m, b.amount, r, z, resourceToAdd)
+    #print(m, b.amount, r, z, resourceToAdd)
 """
+
+#function that renews all the relativeRessources
 def renewPlayerRessources():
     buildingUpkeep =0.1*(windmill.amount + lumber.amount + bakery.amount + wheatfarm.amount)
     #Gold
@@ -290,40 +307,73 @@ def renewPlayerRessources():
         else:
             nikita.shield += nikita.iron
             nikita.iron = 0
+    if nikita.iron<0:
+        nikita.iron=0
 
+    #these will be used to calculate damage to be done and taken in combat
     nikita.troophealth = gladiator.amount * gladiator.health + knight.amount * knight.health + archer.amount * archer.health
     nikita.troopattack = gladiator.amount * gladiator.damage + knight.amount * knight.damage + archer.amount * archer.damage
     nikita.power = nikita.troopattack + nikita.troophealth
-    print("your power",nikita.power)
 
     enemy1.power = enemy1.difficulty + enemy1.power
-    print("enemy power",enemy1.power)
 
+#player attacks enemy
+def attack(x):
+    currentattack=0
+    print("You are stronger than your enemy!")
+    if nikita.attacks<0:
+        currentattack=1/nikita.attacks
+    else:
+        currentattack = nikita.attacks
+    print("You are attacking with the bonus of", currentattack)
+    enemy1.health -= nikita.troopattack/100*abs(currentattack)
+    staggerPercentage = enemy1.power / (enemy1.power - nikita.troopattack)
+    nikita.health -= x * staggerPercentage/100
+    nikita.attacks+=0.1
 
-def defend():
+#enemy attacks player
+def defend(x):
+    currentattack=0
+    print("You are weaker than your enemy!")
+    if nikita.attacks>0:
+        currentattack=1/nikita.attacks
+    else:
+        currentattack = nikita.attacks
+    print("You are attacking with the bonus of", currentattack)
+    nikita.health -= x/300*abs(currentattack) #reduced, so he soesnt do too much Damage
+    healthToBeLost = x - nikita.troophealth
+    staggerPercentage = nikita.troophealth/(nikita.troophealth-healthToBeLost)
+    DamageToBeDone = nikita.troopattack*staggerPercentage*0.8
+    LoseTroops(healthToBeLost)
+    enemy1.power -= DamageToBeDone
+    nikita.attacks-=0.1
+
+#function use to find out who attacks who
+def fight():
+    print("your power is",nikita.power)
+    print("enemy power is",enemy1.power)
     enemyDamage = enemy1.power/2 #enemys attack is gonna be half his power, if we say he attacks with knights,, further turned down, so he doesnt do too much damage
     #if enemy is stronger then you
     if (enemy1.power>=nikita.power):
-        print("You are weaker then your enemy!")
-        nikita.health -= enemyDamage/999 #reduced, so he soesnt do too much Damage
-        healthToBeLost = enemyDamage - nikita.troophealth
-        staggerPercentage = nikita.troophealth/(nikita.troophealth-healthToBeLost)
-        DamageToBeDone = nikita.troopattack*staggerPercentage
-        LoseTroops(healthToBeLost)
-        enemy1.power -= DamageToBeDone
-
-
+        defend(enemyDamage)
     #if enemy is weaker than you
     else:
-        print("You are stronger then your enemy!")
+        attack(enemyDamage)
 
+#if you are defending, you will lose troops
 def LoseTroops(x):
     if(nikita.troophealth > 0):
         gladiator.amount -= gladiator.health / (x*0.6)
         knight.amount -= knight.health / (x*0.3)
         archer.amount -= archer.health / (x*0.1)
+        if gladiator.amount<0:
+            gladiator.amount = 0
+        if knight.amount<0:
+            knight.amount = 0
+        if archer.amount<0:
+            archer.amount = 0
     else:
-        nikita.health -= x /600
+        nikita.health -= x /20
 
 #Create Objects
 
@@ -347,10 +397,13 @@ else:
     enemy1=Enemy(100, 100, 90)
 
 #main
+#should be self-explanatory, checks the input and then decides what to do
 while True:
 
+    #renew variables
     loop=1
     rotations+=1
+    totalrotations+=1
     flushInput()
 
     #adding gold, resources etc.
@@ -361,6 +414,7 @@ while True:
     #Asking for user input
     userInput = input("build with b, recruit with r, fight with f")
 
+    #building branch
     if userInput=="b":
         userInput=str(input("build: house with h, lumber with l, wheatfarm with w, ironmine with i"+"\n"+"windmill with W, bakery with b, Weaponsmith with we"+"\n"+"barracks with B, shieldsmith with s, bowworkshop with bo"))
         if( userInput == "h"):
@@ -395,6 +449,7 @@ while True:
         else:
             print("You didnt input a valid input!")
 
+    #recruiting branch
     if userInput=="r":
         if (barrack.amount == 1):
             userInput=str(input("recruit: knight with k, gladiator with g, archer with a"))
@@ -411,23 +466,31 @@ while True:
                 print("You didnt input a valid input!")
         else:
             print("You have to to own a Barrack!")
+            time.sleep(2)
 
+    #attacks the enemy
+    if userInput == "f":
+        print("Attacking your enemy!")
+        fight()
+        time.sleep(6)
+    #enemy will attack every 5 turns
     if (rotations == 5):
         print("Your enemy is attacking")
-        defend()
-        time.sleep(3)
+        fight()
+        time.sleep(6)
         rotations=0
 
-    if(nikita.health <= 0 or nikita.gold >9999):
+    #checks if you won or lost yet
+    if(nikita.health <= 0 or enemy1.health <= 0):
         if(nikita.health <= 0):
             win = 0
-        if(nikita.gold > 9999):
+        if(enemy1.health <= 0):
             win = 1
         break
 
-#Checks if you won or not
+#tells you if you won or not and what your score is
 
 if win == 1:
-    print("congratulations, you won!")
+    print("congratulations, you won!", "\n", "you got the score of ", totalrotations)
 else:
-    print("you lost, try again!")
+    print("you lost, try again!", "\n", "you got the score of ", totalrotations)
